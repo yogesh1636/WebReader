@@ -2,15 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Payment | Bibliotheca.</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-white text-gray-800 font-sans">
-  <header class="bg-white shadow-md sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 flex justify-between items-center h-16">
+
+<body class="bg-gray-100 text-gray-800 font-sans">
+
+  <!-- HEADER -->
+  <header class="bg-white shadow sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 h-16 flex justify-between items-center">
       <h1 class="text-2xl font-bold text-indigo-600">Bibliotheca.</h1>
-      <nav class="hidden md:flex gap-6 text-gray-700 font-medium">
+      <nav class="hidden md:flex gap-6 font-medium">
         <a href="index.html" class="hover:text-indigo-600">Home</a>
         <a href="shop.html" class="hover:text-indigo-600">Shop</a>
         <a href="cart.html" class="hover:text-indigo-600">Cart</a>
@@ -18,80 +21,131 @@
     </div>
   </header>
 
-  <section class="max-w-lg mx-auto mt-8 sm:mt-12 bg-indigo-50 p-4 sm:p-8 rounded shadow">
-    <h2 class="text-2xl sm:text-2xl font-bold text-indigo-800 mb-6 text-center">Payment</h2>
-    <form id="paymentForm" class="space-y-6">
+  <!-- PAYMENT SECTION -->
+  <section class="max-w-lg mx-auto mt-10 bg-white p-6 rounded-xl shadow">
+    <h2 class="text-2xl font-bold text-center text-indigo-700 mb-6">
+      Secure Payment
+    </h2>
+
+    <form id="paymentForm" class="space-y-5">
+
+      <!-- PAYMENT METHOD -->
       <div>
-        <label class="block font-medium mb-2">Choose Payment Method:</label>
-        <select id="paymentMethod" class="w-full px-4 py-2 border rounded">
-          <option value="card">Credit/Debit Card</option>
-          <option value="upi">UPI</option>
+        <label class="block font-semibold mb-2">Payment Method</label>
+        <select id="paymentMethod" class="w-full border px-4 py-2 rounded">
+          <option value="upi">UPI (Recommended)</option>
+          <option value="card">Card (via UPI)</option>
         </select>
+        <p class="text-sm text-gray-500 mt-1">
+          All payments are processed via FamPay UPI
+        </p>
       </div>
-      <div id="cardFields">
-        <input type="text" id="cardNumber" class="w-full px-4 py-2 border rounded mb-2" placeholder="Card Number" maxlength="19" required />
-        <div class="flex flex-col sm:flex-row gap-2">
-          <input type="text" id="cardExpiry" class="w-full sm:w-1/2 px-4 py-2 border rounded" placeholder="MM/YY" maxlength="5" required />
-          <input type="text" id="cardCVV" class="w-full sm:w-1/2 px-4 py-2 border rounded" placeholder="CVV" maxlength="4" required />
+
+      <!-- CARD INFO (UI ONLY) -->
+      <div id="cardFields" class="hidden space-y-2">
+        <input type="text" class="w-full border px-4 py-2 rounded" placeholder="Card Number (UI only)">
+        <div class="flex gap-2">
+          <input type="text" class="w-1/2 border px-4 py-2 rounded" placeholder="MM/YY">
+          <input type="text" class="w-1/2 border px-4 py-2 rounded" placeholder="CVV">
         </div>
+        <p class="text-xs text-red-500">
+          Card payments are redirected to FamPay UPI
+        </p>
       </div>
-      <div id="upiField" class="hidden">
-        <input type="text" id="upiId" class="w-full px-4 py-2 border rounded mb-4" placeholder="UPI ID (e.g. name@bank)" />
-        <div class="flex flex-col items-center">
-          <span class="text-gray-600 text-sm mb-2">Or scan to pay:</span>
-          <img src="qr/GooglePay_QR.jpeg" alt="UPI QR Code" class="w-100 h-100 object-contain border rounded shadow mb-2" />
+
+      <!-- UPI SECTION -->
+      <div id="upiSection" class="space-y-3">
+        <div class="bg-indigo-50 p-3 rounded text-center">
+          <p class="font-medium">Pay to FamPay UPI</p>
+          <p class="text-indigo-700 font-semibold" id="upiIdText"></p>
         </div>
+
+        <div class="flex justify-center">
+          <img src="qr/GooglePay_QR.jpeg"
+               alt="UPI QR"
+               class="w-40 h-40 border rounded shadow">
+        </div>
+
+        <button type="button"
+                id="payNowBtn"
+                class="w-full bg-green-600 text-white py-3 rounded font-semibold hover:bg-green-700 transition">
+          Open UPI App & Pay
+        </button>
       </div>
-      <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded font-semibold hover:bg-indigo-700 transition">Pay Now</button>
+
+      <!-- UTR FIELD -->
+      <div>
+        <label class="block font-semibold mb-2">
+          Transaction ID (UTR) <span class="text-red-500">*</span>
+        </label>
+        <input type="text"
+               id="utr"
+               class="w-full border px-4 py-2 rounded"
+               placeholder="Enter 12+ digit UTR number"
+               minlength="12"
+               required>
+      </div>
+
+      <!-- SUBMIT -->
+      <button type="submit"
+              class="w-full bg-indigo-600 text-white py-3 rounded font-semibold hover:bg-indigo-700 transition">
+        Verify & Continue
+      </button>
+
     </form>
-    <p id="paymentMsg" class="text-green-600 mt-4 hidden text-center font-semibold"></p>
   </section>
 
+  <!-- SCRIPT -->
   <script>
-    const paymentMethod = document.getElementById('paymentMethod');
-    const cardFields = document.getElementById('cardFields');
-    const upiField = document.getElementById('upiField');
-    paymentMethod.addEventListener('change', function() {
-      if (this.value === 'card') {
-        cardFields.classList.remove('hidden');
-        upiField.classList.add('hidden');
-        cardFields.querySelectorAll('input').forEach(i => i.required = true);
-        upiField.querySelector('input').required = false;
-      } else {
-        cardFields.classList.add('hidden');
-        upiField.classList.remove('hidden');
-        cardFields.querySelectorAll('input').forEach(i => i.required = false);
-        upiField.querySelector('input').required = true;
-      }
+    const FAMPAY_UPI = "yourname@fampay"; // 🔴 CHANGE THIS
+    document.getElementById("upiIdText").textContent = FAMPAY_UPI;
+
+    const method = document.getElementById("paymentMethod");
+    const cardFields = document.getElementById("cardFields");
+    const payBtn = document.getElementById("payNowBtn");
+
+    method.addEventListener("change", () => {
+      cardFields.classList.toggle("hidden", method.value !== "card");
     });
 
-    document.getElementById('paymentForm').addEventListener('submit', function(e) {
+    function openUPI(amount) {
+      const upiURL =
+        `upi://pay?pa=${FAMPAY_UPI}&pn=Bibliotheca&am=${amount}&cu=INR&tn=Book Purchase`;
+      window.location.href = upiURL;
+    }
+
+    payBtn.addEventListener("click", () => {
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const total = cart.reduce((s, i) => s + i.price, 0);
+      openUPI(total);
+    });
+
+    document.getElementById("paymentForm").addEventListener("submit", e => {
       e.preventDefault();
-      // Dummy payment logic
-      let method = paymentMethod.value;
-      let valid = false;
-      if (method === 'card') {
-        valid = document.getElementById('cardNumber').value && document.getElementById('cardExpiry').value && document.getElementById('cardCVV').value;
-      } else {
-        valid = document.getElementById('upiId').value;
+
+      const utr = document.getElementById("utr").value.trim();
+      if (utr.length < 12) {
+        alert("Please enter a valid Transaction ID (UTR)");
+        return;
       }
-      if (valid) {
-        // Save order details to localStorage for receipt
-        const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        const order = {
-          items: cart,
-          total: cart.reduce((sum, item) => sum + item.price, 0),
-          paymentMethod: method === 'card' ? 'Card' : 'UPI',
-          date: new Date().toLocaleString()
-        };
-        localStorage.setItem('lastOrder', JSON.stringify(order));
-        localStorage.removeItem('cart');
-        window.location.href = 'receipt.html';
-      } else {
-        document.getElementById('paymentMsg').textContent = 'Please fill all required fields.';
-        document.getElementById('paymentMsg').classList.remove('hidden');
-      }
+
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const total = cart.reduce((s, i) => s + i.price, 0);
+
+      const order = {
+        items: cart,
+        total,
+        paymentMethod: "FamPay UPI",
+        utr,
+        date: new Date().toLocaleString()
+      };
+
+      localStorage.setItem("lastOrder", JSON.stringify(order));
+      localStorage.removeItem("cart");
+
+      window.location.href = "receipt.html";
     });
   </script>
+
 </body>
 </html>
